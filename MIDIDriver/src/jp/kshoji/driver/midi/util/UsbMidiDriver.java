@@ -3,7 +3,8 @@ package jp.kshoji.driver.midi.util;
 import android.content.Context;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
-import android.support.annotation.NonNull;
+
+import androidx.annotation.NonNull;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -110,7 +111,7 @@ public abstract class UsbMidiDriver implements OnMidiDeviceDetachedListener, OnM
 
     /**
      * Starts using UsbMidiDriver.
-     *
+     * <p>
      * Starts the USB device watching and communicating thread.
      */
     public final void open() {
@@ -133,7 +134,7 @@ public abstract class UsbMidiDriver implements OnMidiDeviceDetachedListener, OnM
 
     /**
      * Stops using UsbMidiDriver.
-     *
+     * <p>
      * Shutdown the USB device communicating thread.
      * The all connected devices will be closed.
      */

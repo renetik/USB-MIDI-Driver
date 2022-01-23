@@ -7,9 +7,10 @@ import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbEndpoint;
 import android.hardware.usb.UsbInterface;
 import android.os.Build;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.util.Log;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Collections;
@@ -23,166 +24,166 @@ import jp.kshoji.driver.usb.util.DeviceFilter;
 
 /**
  * Utility for finding MIDI device
- * 
+ *
  * @author K.Shoji
  */
 public final class UsbMidiDeviceUtils {
 
-	/**
-	 * Find {@link UsbInterface} from {@link UsbDevice} with the direction
-	 * 
-	 * @param usbDevice the UsbDevice
-	 * @param direction {@link UsbConstants#USB_DIR_IN} or {@link UsbConstants#USB_DIR_OUT}
-	 * @param deviceFilters the List of {@link DeviceFilter}
-	 * @return {@link Set<UsbInterface>} always not null
-	 */
+    /**
+     * Find {@link UsbInterface} from {@link UsbDevice} with the direction
+     *
+     * @param usbDevice     the UsbDevice
+     * @param direction     {@link UsbConstants#USB_DIR_IN} or {@link UsbConstants#USB_DIR_OUT}
+     * @param deviceFilters the List of {@link DeviceFilter}
+     * @return {@link Set<UsbInterface>} always not null
+     */
     @NonNull
     public static Set<UsbInterface> findMidiInterfaces(@NonNull UsbDevice usbDevice, int direction, @NonNull List<DeviceFilter> deviceFilters) {
-		Set<UsbInterface> usbInterfaces = new HashSet<>();
-		
-		int count = usbDevice.getInterfaceCount();
-		for (int i = 0; i < count; i++) {
-			UsbInterface usbInterface = usbDevice.getInterface(i);
-			
-			if (findMidiEndpoint(usbDevice, usbInterface, direction, deviceFilters) != null) {
-				usbInterfaces.add(usbInterface);
-			}
-		}
-		return Collections.unmodifiableSet(usbInterfaces);
-	}
-	
-	/**
-	 * Find all {@link UsbInterface} from {@link UsbDevice}
-	 *
-     * @param usbDevice the UsbDevice
+        Set<UsbInterface> usbInterfaces = new HashSet<>();
+
+        int count = usbDevice.getInterfaceCount();
+        for (int i = 0; i < count; i++) {
+            UsbInterface usbInterface = usbDevice.getInterface(i);
+
+            if (findMidiEndpoint(usbDevice, usbInterface, direction, deviceFilters) != null) {
+                usbInterfaces.add(usbInterface);
+            }
+        }
+        return Collections.unmodifiableSet(usbInterfaces);
+    }
+
+    /**
+     * Find all {@link UsbInterface} from {@link UsbDevice}
+     *
+     * @param usbDevice     the UsbDevice
      * @param deviceFilters the List of {@link DeviceFilter}
-	 * @return {@link Set<UsbInterface>} always not null
-	 */
+     * @return {@link Set<UsbInterface>} always not null
+     */
     @NonNull
     public static Set<UsbInterface> findAllMidiInterfaces(@NonNull UsbDevice usbDevice, @NonNull List<DeviceFilter> deviceFilters) {
-		Set<UsbInterface> usbInterfaces = new HashSet<>();
-		
-		int count = usbDevice.getInterfaceCount();
-		for (int i = 0; i < count; i++) {
-			UsbInterface usbInterface = usbDevice.getInterface(i);
-			
-			if (findMidiEndpoint(usbDevice, usbInterface, UsbConstants.USB_DIR_IN, deviceFilters) != null) {
-				usbInterfaces.add(usbInterface);
-			}
-			if (findMidiEndpoint(usbDevice, usbInterface, UsbConstants.USB_DIR_OUT, deviceFilters) != null) {
-				usbInterfaces.add(usbInterface);
-			}
-		}
-		return Collections.unmodifiableSet(usbInterfaces);
-	}
+        Set<UsbInterface> usbInterfaces = new HashSet<>();
 
-	/**
-	 * Find {@link Set<MidiInputDevice>} from {@link UsbDevice}
-	 *
-     * @param usbDevice the UsbDevice
-	 * @param usbDeviceConnection the UsbDeviceConnection
-     * @param deviceFilters the List of {@link jp.kshoji.driver.usb.util.DeviceFilter}
-	 * @return {@link Set<MidiInputDevice>} always not null
-	 */
+        int count = usbDevice.getInterfaceCount();
+        for (int i = 0; i < count; i++) {
+            UsbInterface usbInterface = usbDevice.getInterface(i);
+
+            if (findMidiEndpoint(usbDevice, usbInterface, UsbConstants.USB_DIR_IN, deviceFilters) != null) {
+                usbInterfaces.add(usbInterface);
+            }
+            if (findMidiEndpoint(usbDevice, usbInterface, UsbConstants.USB_DIR_OUT, deviceFilters) != null) {
+                usbInterfaces.add(usbInterface);
+            }
+        }
+        return Collections.unmodifiableSet(usbInterfaces);
+    }
+
+    /**
+     * Find {@link Set<MidiInputDevice>} from {@link UsbDevice}
+     *
+     * @param usbDevice           the UsbDevice
+     * @param usbDeviceConnection the UsbDeviceConnection
+     * @param deviceFilters       the List of {@link jp.kshoji.driver.usb.util.DeviceFilter}
+     * @return {@link Set<MidiInputDevice>} always not null
+     */
     @NonNull
     public static Set<MidiInputDevice> findMidiInputDevices(@NonNull UsbDevice usbDevice, @NonNull UsbDeviceConnection usbDeviceConnection, @NonNull List<DeviceFilter> deviceFilters) {
-		Set<MidiInputDevice> devices = new HashSet<>();
+        Set<MidiInputDevice> devices = new HashSet<>();
         Set<Integer> registeredEndpointNumbers = new HashSet<>();
 
-		int count = usbDevice.getInterfaceCount();
-		for (int i = 0; i < count; i++) {
-			UsbInterface usbInterface = usbDevice.getInterface(i);
+        int count = usbDevice.getInterfaceCount();
+        for (int i = 0; i < count; i++) {
+            UsbInterface usbInterface = usbDevice.getInterface(i);
 
-			UsbEndpoint endpoint = findMidiEndpoint(usbDevice, usbInterface, UsbConstants.USB_DIR_IN, deviceFilters);
-			if (endpoint != null) {
+            UsbEndpoint endpoint = findMidiEndpoint(usbDevice, usbInterface, UsbConstants.USB_DIR_IN, deviceFilters);
+            if (endpoint != null) {
                 // multiple endpoints on the same address. use the first one.
                 if (!registeredEndpointNumbers.contains(endpoint.getEndpointNumber())) {
                     registeredEndpointNumbers.add(endpoint.getEndpointNumber());
                     devices.add(new MidiInputDevice(usbDevice, usbDeviceConnection, usbInterface, endpoint));
                 }
-			}
-		}
+            }
+        }
 
-		return Collections.unmodifiableSet(devices);
-	}
-	
-	/**
-	 * Find {@link Set<MidiOutputDevice>} from {@link UsbDevice}
-	 *
-     * @param usbDevice the UsbDevice
+        return Collections.unmodifiableSet(devices);
+    }
+
+    /**
+     * Find {@link Set<MidiOutputDevice>} from {@link UsbDevice}
+     *
+     * @param usbDevice           the UsbDevice
      * @param usbDeviceConnection the UsbDeviceConnection
-     * @param deviceFilters the List of {@link DeviceFilter}
-	 * @return {@link Set<MidiOutputDevice>} always not null
-	 */
+     * @param deviceFilters       the List of {@link DeviceFilter}
+     * @return {@link Set<MidiOutputDevice>} always not null
+     */
     @NonNull
     public static Set<MidiOutputDevice> findMidiOutputDevices(@NonNull UsbDevice usbDevice, @NonNull UsbDeviceConnection usbDeviceConnection, @NonNull List<DeviceFilter> deviceFilters) {
-		Set<MidiOutputDevice> devices = new HashSet<>();
+        Set<MidiOutputDevice> devices = new HashSet<>();
         Set<Integer> registeredEndpointNumbers = new HashSet<>();
 
-		int count = usbDevice.getInterfaceCount();
-		for (int i = 0; i < count; i++) {
-			UsbInterface usbInterface = usbDevice.getInterface(i);
+        int count = usbDevice.getInterfaceCount();
+        for (int i = 0; i < count; i++) {
+            UsbInterface usbInterface = usbDevice.getInterface(i);
 
             UsbEndpoint endpoint = findMidiEndpoint(usbDevice, usbInterface, UsbConstants.USB_DIR_OUT, deviceFilters);
-			if (endpoint != null) {
+            if (endpoint != null) {
                 // multiple endpoints on the same address. use the first one.
                 if (!registeredEndpointNumbers.contains(endpoint.getEndpointNumber())) {
                     registeredEndpointNumbers.add(endpoint.getEndpointNumber());
                     devices.add(new MidiOutputDevice(usbDevice, usbDeviceConnection, usbInterface, endpoint));
                 }
-			}
-		}
-		
-		return Collections.unmodifiableSet(devices);
-	}
+            }
+        }
 
-	/**
-	 * Find {@link UsbEndpoint} with the direction
-	 *
-     * @param usbDevice the UsbDevice
-	 * @param usbInterface the UsbInterface
-     * @param direction {@link UsbConstants#USB_DIR_IN} or {@link UsbConstants#USB_DIR_OUT}
+        return Collections.unmodifiableSet(devices);
+    }
+
+    /**
+     * Find {@link UsbEndpoint} with the direction
+     *
+     * @param usbDevice     the UsbDevice
+     * @param usbInterface  the UsbInterface
+     * @param direction     {@link UsbConstants#USB_DIR_IN} or {@link UsbConstants#USB_DIR_OUT}
      * @param deviceFilters the List of {@link DeviceFilter}
-	 * @return {@link UsbEndpoint}, null if not found
-	 */
+     * @return {@link UsbEndpoint}, null if not found
+     */
     @Nullable
     public static UsbEndpoint findMidiEndpoint(@NonNull UsbDevice usbDevice, @NonNull UsbInterface usbInterface, int direction, @NonNull List<DeviceFilter> deviceFilters) {
-		int endpointCount = usbInterface.getEndpointCount();
-		
-		// standard USB MIDI interface
-		if (usbInterface.getInterfaceClass() == 1 && usbInterface.getInterfaceSubclass() == 3) {
-			for (int endpointIndex = 0; endpointIndex < endpointCount; endpointIndex++) {
-				UsbEndpoint endpoint = usbInterface.getEndpoint(endpointIndex);
-				if (endpoint.getDirection() == direction) {
-					return endpoint;
-				}
-			}
-		} else {
-			boolean filterMatched = false;
-			for (DeviceFilter deviceFilter : deviceFilters) {
-				if (deviceFilter.matches(usbDevice)) {
-					filterMatched = true;
-					break;
-				}
-			}
-			
-			if (filterMatched == false) {
-				Log.d(Constants.TAG, "unsupported interface: " + usbInterface);
-				return null;
-			}
+        int endpointCount = usbInterface.getEndpointCount();
 
-			// non standard USB MIDI interface
-			for (int endpointIndex = 0; endpointIndex < endpointCount; endpointIndex++) {
-				UsbEndpoint endpoint = usbInterface.getEndpoint(endpointIndex);
-				if ((endpoint.getType() == UsbConstants.USB_ENDPOINT_XFER_BULK || endpoint.getType() == UsbConstants.USB_ENDPOINT_XFER_INT)) {
-					if (endpoint.getDirection() == direction) {
-						return endpoint;
-					}
-				}
-			}
-		}
-		return null;
-	}
+        // standard USB MIDI interface
+        if (usbInterface.getInterfaceClass() == 1 && usbInterface.getInterfaceSubclass() == 3) {
+            for (int endpointIndex = 0; endpointIndex < endpointCount; endpointIndex++) {
+                UsbEndpoint endpoint = usbInterface.getEndpoint(endpointIndex);
+                if (endpoint.getDirection() == direction) {
+                    return endpoint;
+                }
+            }
+        } else {
+            boolean filterMatched = false;
+            for (DeviceFilter deviceFilter : deviceFilters) {
+                if (deviceFilter.matches(usbDevice)) {
+                    filterMatched = true;
+                    break;
+                }
+            }
+
+            if (filterMatched == false) {
+                Log.d(Constants.TAG, "unsupported interface: " + usbInterface);
+                return null;
+            }
+
+            // non standard USB MIDI interface
+            for (int endpointIndex = 0; endpointIndex < endpointCount; endpointIndex++) {
+                UsbEndpoint endpoint = usbInterface.getEndpoint(endpointIndex);
+                if ((endpoint.getType() == UsbConstants.USB_ENDPOINT_XFER_BULK || endpoint.getType() == UsbConstants.USB_ENDPOINT_XFER_INT)) {
+                    if (endpoint.getDirection() == direction) {
+                        return endpoint;
+                    }
+                }
+            }
+        }
+        return null;
+    }
 
     private static final int USB_REQUEST_GET_DESCRIPTOR = 0x06;
     private static final int USB_DATA_TYPE_STRING = 0x03;
@@ -190,7 +191,7 @@ public final class UsbMidiDeviceUtils {
     /**
      * Get UsbDevice's product name
      *
-     * @param usbDevice the UsbDevice
+     * @param usbDevice           the UsbDevice
      * @param usbDeviceConnection the UsbDeviceConnection
      * @return the product name
      */
@@ -219,7 +220,7 @@ public final class UsbMidiDeviceUtils {
     /**
      * Get UsbDevice's manufacturer name
      *
-     * @param usbDevice the UsbDevice
+     * @param usbDevice           the UsbDevice
      * @param usbDeviceConnection the UsbDeviceConnection
      * @return the manufacturer name
      */
