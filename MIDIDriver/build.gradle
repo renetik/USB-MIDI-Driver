@@ -16,10 +16,10 @@ dependencies {
 }
 
 android {
-    compileSdkVersion 23
+    compileSdkVersion project.properties.sdk_version
 
     defaultConfig {
-        minSdkVersion 12
+        minSdkVersion project.properties.min_sdk_version
     }
 
     sourceSets {
