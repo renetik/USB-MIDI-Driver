@@ -157,7 +157,7 @@ public final class MidiOutputDevice {
 	 *
 	 * @author K.Shoji
 	 */
-    @SuppressLint("NewApi")
+//    @SuppressLint("NewApi")
 	private final class WaiterThread extends Thread {
         final Queue<byte[]> queue = new LinkedList<>();
 
