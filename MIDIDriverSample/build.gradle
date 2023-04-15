@@ -13,6 +13,7 @@ dependencies {
 }
 
 android {
+    namespace 'jp.kshoji.driver.midi.sample'
     compileSdkVersion 30
 
     defaultConfig {

@@ -14,6 +14,7 @@ dependencies {
 }
 
 android {
+    namespace 'jp.kshoji.driver.midi'
     compileSdkVersion project.properties.sdk_version
     defaultConfig {
         minSdkVersion project.properties.min_sdk_version
